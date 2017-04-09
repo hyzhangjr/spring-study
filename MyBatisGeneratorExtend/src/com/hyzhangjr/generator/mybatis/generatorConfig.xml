@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ The MIT License (MIT)
+  ~
+  ~ Copyright (c) 2014-2016 
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in
+  ~ all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  ~ THE SOFTWARE.
+  -->
+
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+  <context id="Oracle" targetRuntime="com.hyzhangjr.generator.mybatis.MyBatis3SimpleImpl" defaultModelType="flat">
+    <property name="javaFileEncoding" value="UTF-8"/>
+    
+	<plugin type="com.hyzhangjr.generator.mybatis.MapperPlugin">
+     
+    </plugin>
+
+	<commentGenerator type="com.hyzhangjr.generator.mybatis.MapperCommentGenerator">
+	</commentGenerator>    
+
+    <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
+                    connectionURL="jdbc:oracle:thin:@127.0.0.1:1521:ctp4"
+                    userId="ctp4"
+                    password="ctp4">
+    	<property name="remarksReporting" value="true"></property>
+    </jdbcConnection>
+
+    <javaModelGenerator targetPackage="com.hyzhangjr.test.entity" targetProject="./src" />
+
+    <sqlMapGenerator targetPackage="com.hyzhangjr.test.mapper" targetProject="./src"/>
+    
+    
+    <javaClientGenerator targetPackage="com.hyzhangjr.test.mapper" targetProject="./src" implementationPackage="com.hyzhangjr.test.mapper" type="XMLMAPPER"/>
+
+	<!-- 针对Oracle，schema为用户名，必须设置，否则实体类的注释无法生成 -->
+	<!-- 执行comment脚本的用户和建表用户必须一致，否则实体类的注释无法生成，表存在同义词时需要注意 -->
+	<!-- select * from all_tab_comments where table_name = 'demo_table'; -->
+    <table tableName="demo_table" schema="ctp4">
+      <generatedKey column="id" sqlStatement="JDBC"/>
+    </table>
+  </context>
+</generatorConfiguration>

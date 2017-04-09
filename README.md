@@ -10,6 +10,7 @@
 2、定义Aspect类DataSourceSelectAdvisor，通过before在执行前进行数据源选择
 3、启动Bootstrap就可看到示例运行结果
 
+
 二、mybatis代码自动生成器扩展 MyBatisGeneratorExtend项目
 
 在Spring中用到了mybatis时接触到mybatis-generator用来自动生成model和mapper,发现原生生成的不是很好,看到有人扩展过就学习了下
@@ -51,3 +52,4 @@
     > 注意事项:
     > 1 -这些方法将被包装的代码生成器调用。如果您提供一个自定义的代码生成器，那么这些方法将仅在自定义代码生成调用它们时调用。
     > 2 -Java客户端的方法只有当配置Java客户端生成器的时候会被调用。
+

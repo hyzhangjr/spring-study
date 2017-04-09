@@ -1,0 +1,71 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-4.1.xsd
+      http://www.springframework.org/schema/tx
+	  http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+	  http://www.springframework.org/schema/aop
+	  http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+	  ">
+
+	<!-- 启动包扫描功能，以便注册带有@Service、@repository、@Component等注解的类成为spring的bean -->
+	<context:component-scan base-package="com.hyzhangjr.*" />
+
+	<bean id="bootstrapaction" class="com.hyzhangjr.spring.action.BootstrapAction" init-method="start"></bean>
+
+	<!-- 数据源配置 -->
+	<bean id="dataSource1" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:ctp4" />
+		<property name="username" value="ctp5" />
+		<property name="password" value="ctp5" />
+	</bean>
+
+	<bean id="dataSource2" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:ctp4" />
+		<property name="username" value="ctp4" />
+		<property name="password" value="ctp4" />
+	</bean>
+
+	<!-- 多数据源配置 -->
+	<bean id="multipleDataSource" class="com.hyzhangjr.spring.ds.MultipleDataSource">
+		<property name="defaultTargetDataSource" ref="dataSource1"/>
+		<property name="targetDataSources">
+			<map>
+				<entry key="dataSource1" value-ref="dataSource1"/>
+				<entry key="dataSource2" value-ref="dataSource2"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- spring和MyBatis完美整合，可以不需要mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="multipleDataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<!--<property name="mapperLocations" value="classpath:com/hyzhangjr/spring/mapper/**/*.xml" />-->
+	</bean>
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.hyzhangjr.spring.mapper" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="multipleDataSource" />
+	</bean>
+
+	<!-- 注解方式配置事物 -->
+	<tx:annotation-driven transaction-manager="transactionManager" order="2"/>
+
+	<!-- 支持自定义切面 -->
+	<aop:config>
+		<aop:pointcut id="dataSourceSelectPointcut" expression="execution(* com.hyzhangjr.spring.*.impl.*ServiceImpl.*(..))" />
+		<aop:advisor pointcut-ref="dataSourceSelectPointcut" advice-ref="dataSourceSelectAdvisor" />
+	</aop:config>
+</beans>
